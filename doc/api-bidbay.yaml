@@ -1,0 +1,622 @@
+openapi: 3.0.3
+info:
+  title: API - BidBay 
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/users:
+    post:
+      description: ''
+      summary: Create User
+      tags:
+        - User
+      parameters: [ ]
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Name Test
+                email: email@email.com
+                login: email@email.com
+                password: '123456'
+                location:
+                  lat: 123
+                  lng: 1234
+                  address: Rua
+                  city: Cidade
+                  state: Estado
+                  zip_code: 123456
+      security: [ ]
+  /api/v1/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      description: ''
+      summary: Get User
+      tags:
+        - User
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security:
+        - bearerAuth: [ ]
+    put:
+      description: ''
+      summary: Update User
+      tags:
+        - User
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Name sss
+                email: email@email.com
+                login: email@email.com
+                password: '123456'
+                location:
+                  lat: 123
+                  lng: 1234
+                  address: Rua
+                  city: Cidade
+                  state: Estado
+                  zip_code: 123456
+      security:
+        - bearerAuth: [ ]
+  /api/v1/deals:
+    post:
+      description: ''
+      summary: Create
+      tags:
+        - Deal
+      parameters: [ ]
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                type: 0
+                value: 10
+                description: description
+                trade_for: trade_for
+                location:
+                  lat: 123
+                  lng: 1234
+                  address: Rua
+                  city: Cidade
+                  state: Estado
+                  zip_code: 123456
+                urgency:
+                  type: 0
+                  limit_date: '2024-01-01T00:00:00'
+                photos:
+                  - photo1
+                  - photo2
+      security:
+        - bearerAuth: [ ]
+  /api/v1/deals/{dealId}:
+    parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      description: ''
+      summary: Retrieve
+      tags:
+        - Deal
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+    put:
+      description: ''
+      summary: Update
+      tags:
+        - Deal
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                type: 0
+                value: 10
+                description: description
+                trade_for: trade_for
+                location:
+                  lat: 123
+                  lng: 1234
+                  address: Rua
+                  city: Cidade
+                  state: Estado
+                  zip_code: 123456
+                urgency:
+                  type: 0
+                  limit_date: '2024-01-01T00:00:00'
+                photos:
+                  - photo1
+                  - photo2
+                  - photo3
+      security: [ ]
+  /api/v1/deals/{dealId}/bids:
+    parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    post:
+      description: ''
+      summary: Create
+      tags:
+        - Bid
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                user_id: 1
+                accepted: false
+                value: 1
+                description: teste
+      security: [ ]
+    get:
+      description: ''
+      summary: Retrieve All
+      tags:
+        - Bid
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+  /api/v1/deals/{dealId}/bids/{bidId}:
+    parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+      - name: bidId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      description: ''
+      summary: Retrieve
+      tags:
+        - Bid
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+    put:
+      description: ''
+      summary: Update
+      tags:
+        - Bid
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                user_id: 1
+                accepted: false
+                value: 1
+                description: teste updated2
+      security: [ ]
+  /api/v1/deals/{dealId}/messages:
+    post:
+      description: ''
+      summary: Create
+      tags:
+        - Message
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          description: ''
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                user_id: 7
+                title: title
+                message: message
+      security: [ ]
+  /api/v1/deals/{dealId}/messages/{messageId}:
+    parameters:
+      - name: messageId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+      - name: dealId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    get:
+      description: ''
+      summary: Retrieve
+      tags:
+        - Message
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+    put:
+      description: ''
+      summary: Update
+      tags:
+        - Message
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                user_id: 1
+                title: title updated
+                message: message
+      security: [ ]
+  /api/v1/deals/{dealId}/deliveries:
+    parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    post:
+      description: ''
+      summary: Create
+      tags:
+        - Delivery
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                user_id: 1
+      security: [ ]
+    get:
+      description: ''
+      summary: Retrieve
+      tags:
+        - Delivery
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+  /api/v1/users/{userId}/invites:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: integer
+    post:
+      description: ''
+      summary: Create
+      tags:
+        - Invite
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Teste
+                email: email@email.com
+                user: 0
+                user_invited: 0
+      security: [ ]
+    get:
+      description: ''
+      summary: Retrieve All
+      tags:
+        - Invite
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+  /api/v1/users/{userId}/invites/{inviteId}:
+    get:
+      description: ''
+      summary: Retrieve
+      tags:
+        - Invite
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ''
+          schema:
+            type: integer
+        - name: inviteId
+          in: path
+          required: true
+          description: ''
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      security: [ ]
+    put:
+      description: ''
+      summary: Update
+      tags:
+        - Invite
+      parameters: [ ]
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Teste 2
+                email: email@email.com
+                user: 0
+                user_invited: 1
+      security: [ ]
+  /api/v1/authenticate:
+    post:
+      description: ''
+      summary: Authenticate
+      tags:
+        - Authenticate
+      parameters: [ ]
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                login: email@email.com
+                password: '123456'
+      security: [ ]
+  /api/v1/authenticateSSO:
+    post:
+      description: ''
+      summary: AuthenticateSSO
+      tags:
+        - Authenticate
+      parameters: [ ]
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: authorization failed
+        '422':
+          description: validation failed
+        '500':
+          description: unknown server error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                login: email@email.com
+                app_token: 123456-aaaaaaa-xxxxx
+      security: [ ]
+servers:
+  - description: Base Environment
+    variables: { }
+    url: http://localhost:3001/
+tags:
+  - name: User
+    description: ''
+  - name: Deal
+    description: ''
+  - name: Bid
+    description: ''
+  - name: Message
+    description: ''
+  - name: Delivery
+    description: ''
+  - name: Invite
+    description: ''
+  - name: Authenticate
+    description: ''
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

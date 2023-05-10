@@ -1,0 +1,30 @@
+{
+  "name": "api-bidbay",
+  "version": "1.0.0",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ls .; node ./build/main.js",
+    "build": "tsc -p .",
+    "dev": "nodemon src/main.ts"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^18.16.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.4.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.18",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0"
+  }
+}
