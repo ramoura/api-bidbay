@@ -1,0 +1,16 @@
+name: Build Service-Hotmart
+
+on:
+  push:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    steps:
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@main
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
