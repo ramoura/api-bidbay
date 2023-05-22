@@ -13,7 +13,7 @@ export default class UserRepositoryDatabase implements UserRepository {
     private counters: Collection = undefined as any;
 
     constructor() {
-        this.connect();
+        //this.connect();
     }
 
     async connect() {
@@ -24,6 +24,7 @@ export default class UserRepositoryDatabase implements UserRepository {
             if (!this.client) { // I added this extra check
                 console.log('setting client URL:', process.env.DB_CONN_STRING);
                 this.client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
+                console.log('client connected:', this.client)
                 const db: Db = this.client.db(process.env.DB_NAME);
                 this.users = db.collection(this.USER_COLLECTION_NAME);
                 this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
