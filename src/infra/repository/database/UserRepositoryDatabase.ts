@@ -13,7 +13,7 @@ export default class UserRepositoryDatabase implements UserRepository {
     private counters: Collection = undefined as any;
 
     constructor() {
-        //this.connect();
+        this.connect();
     }
 
 
