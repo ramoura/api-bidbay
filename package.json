@@ -1,10 +1,11 @@
 {
   "name": "api-bidbay",
   "version": "1.0.0",
-  "main": "./build/main.js",
+  "main": "./build/mainGC.js",
   "license": "MIT",
   "scripts": {
     "start": "node ./build/main.js",
+    "gcp-build": "npm run build",
     "build": "tsc -p .",
     "dev": "nodemon src/main.ts"
   },
