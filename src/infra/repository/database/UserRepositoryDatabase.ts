@@ -16,18 +16,26 @@ export default class UserRepositoryDatabase implements UserRepository {
         //this.connect();
     }
 
+
     async connect() {
         dotenv.config();
-        console.log('connecting to mongo');
+        console.log('connecting to mongo v2');
 
         try {
             if (!this.client) { // I added this extra check
                 console.log('setting client URL:', process.env.DB_CONN_STRING);
-                this.client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
+                this.client = new MongoClient(process.env.DB_CONN_STRING as string, {
+                    //useUnifiedTopology: true,
+                    //useNewUrlParser: true,
+                    maxIdleTimeMS: 270000,
+                    minPoolSize: 2,
+                    maxPoolSize: 4
+                })
                 console.log('client connected:', this.client)
-                const db: Db = this.client.db(process.env.DB_NAME);
-                this.users = db.collection(this.USER_COLLECTION_NAME);
-                this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
+                const db: Db = await this.client.db(process.env.DB_NAME);
+                console.log('client connected:')
+                this.users = await db.collection(this.USER_COLLECTION_NAME);
+                this.counters = await db.collection(this.COUNTERS_COLLECTION_NAME);
                 console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.users.collectionName}`);
             }
         } catch (error) {
@@ -45,9 +53,11 @@ export default class UserRepositoryDatabase implements UserRepository {
     }
 
     async findById(userId: number): Promise<User | undefined> {
+        console.log('findById')
         var userDB = await this.users.findOne(
             {id: userId}
         );
+        console.log('findById result:', userDB)
         if (!userDB) return undefined;
         return this.extracted(userDB);
     }

@@ -1,5 +1,3 @@
-import ExpressAdapter from "./infra/http/ExpressAdapter";
-
 import CreateUser from "./application/usecase/user/CreateUser";
 import RetrieveUser from "./application/usecase/user/RetrieveUser";
 import UpdateUser from "./application/usecase/user/UpdateUser";
@@ -49,11 +47,12 @@ import AuthorizationMiddleware from "./infra/http/api/AuthorizationMiddleware";
 import TokenGenerate from "./domain/service/TokenGenerate";
 import UserRepository from "./application/repository/UserRepository";
 import DealRepository from "./application/repository/DealRepository";
+import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
 
 const userRepository: UserRepository = new UserRepositoryDatabase();
 const dealRepository: DealRepository = new DealRepositoryDatabase()
 
-const httpServer = new ExpressAdapter()
+const httpServer = new FunctionsGoogleCloudAdapter()
 
 const createUser = new CreateUser(userRepository)
 const retrieveUser = new RetrieveUser(userRepository);
@@ -97,3 +96,5 @@ const ssoProvider: SSOProviderGateway = {
 
 new AuthenticateSSOController(httpServer, new AuthenticateSSO(ssoProvider, userRepository))
 httpServer.listen(3001)
+
+export const api = httpServer.app;

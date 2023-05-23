@@ -1,64 +1,110 @@
-# AWS infrastructure resources
+# Recurso VPC
 resource "aws_vpc" "bidbay_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  tags                 = {
-    Name = "${var.prefix}-bidbay-vpc"
-  }
+  cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_internet_gateway" "bidbay_gateway" {
-  vpc_id = aws_vpc.bidbay_vpc.id
-
-  tags = {
-    Name = "${var.prefix}-bidbay-gateway"
-  }
-}
-
-resource "aws_subnet" "bidbay_subnet_b" {
-  vpc_id = aws_vpc.bidbay_vpc.id
-
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = var.aws_zone
-
-  tags = {
-    Name = "${var.prefix}-bidbay-subnet"
-  }
-}
-
-resource "aws_subnet" "bidbay_subnet_a" {
-  vpc_id = aws_vpc.bidbay_vpc.id
-
+# Recurso Subnet
+resource "aws_subnet" "example_subnet" {
+  vpc_id            = aws_vpc.bidbay_vpc.id
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
-
-  tags = {
-    Name = "${var.prefix}-bidbay-subnet"
-  }
 }
 
-resource "aws_route_table" "bidbay_route_table" {
+# Recurso Internet Gateway
+resource "aws_internet_gateway" "example_igw" {
+  vpc_id = aws_vpc.bidbay_vpc.id
+}
+
+# Recurso NAT Gateway
+resource "aws_nat_gateway" "example_nat_gateway" {
+  allocation_id = aws_eip.example_eip.id
+  subnet_id     = aws_subnet.example_subnet.id
+}
+
+# Recurso Elastic IP
+resource "aws_eip" "example_eip" {
+  vpc = true
+}
+
+# Recurso Rota
+resource "aws_route_table" "example_route_table" {
   vpc_id = aws_vpc.bidbay_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.bidbay_gateway.id
-  }
-
-  tags = {
-    Name = "${var.prefix}-bidbay-route-table"
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.example_nat_gateway.id
   }
 }
 
-resource "aws_route_table_association" "bidbay_route_table_association_a" {
-  subnet_id      = aws_subnet.bidbay_subnet_a.id
-  route_table_id = aws_route_table.bidbay_route_table.id
-}
 
-resource "aws_route_table_association" "bidbay_route_table_association_b" {
-  subnet_id      = aws_subnet.bidbay_subnet_b.id
-  route_table_id = aws_route_table.bidbay_route_table.id
-}
+#-----------------------------------------------------
+
+# AWS infrastructure resources
+
+#resource "aws_vpc" "bidbay_vpc" {
+#  cidr_block           = "10.0.0.0/16"
+#  enable_dns_hostnames = true
+#  tags                 = {
+#    Name = "${var.prefix}-bidbay-vpc"
+#  }
+#}
+#
+#resource "aws_internet_gateway" "bidbay_gateway" {
+#  vpc_id = aws_vpc.bidbay_vpc.id
+#
+#  tags = {
+#    Name = "${var.prefix}-bidbay-gateway"
+#  }
+#}
+#
+#resource "aws_subnet" "bidbay_subnet_b" {
+#  vpc_id = aws_vpc.bidbay_vpc.id
+#
+#  cidr_block        = "10.0.0.0/24"
+#  availability_zone = var.aws_zone
+#
+#  tags = {
+#    Name = "${var.prefix}-bidbay-subnet"
+#  }
+#}
+#
+#resource "aws_subnet" "bidbay_subnet_a" {
+#  vpc_id = aws_vpc.bidbay_vpc.id
+#
+#  cidr_block        = "10.0.1.0/24"
+#  availability_zone = "us-east-1a"
+#
+#  tags = {
+#    Name = "${var.prefix}-bidbay-subnet"
+#  }
+#}
+#
+#resource "aws_route_table" "bidbay_route_table" {
+#  vpc_id = aws_vpc.bidbay_vpc.id
+#
+#  route {
+#    cidr_block = "0.0.0.0/0"
+#    gateway_id = aws_internet_gateway.bidbay_gateway.id
+#  }
+#
+#  tags = {
+#    Name = "${var.prefix}-bidbay-route-table"
+#  }
+#}
+#
+#resource "aws_route_table_association" "bidbay_route_table_association_a" {
+#  subnet_id      = aws_subnet.bidbay_subnet_a.id
+#  route_table_id = aws_route_table.bidbay_route_table.id
+#}
+#
+#resource "aws_route_table_association" "bidbay_route_table_association_b" {
+#  subnet_id      = aws_subnet.bidbay_subnet_b.id
+#  route_table_id = aws_route_table.bidbay_route_table.id
+#}
+
+
+
+#-----------------------------------------------------
 
 # Security group to allow all traffic
 resource "aws_security_group" "bidbay_sg_allowall" {
@@ -117,11 +163,8 @@ resource "aws_iam_policy" "bidbay_lambda_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:CreateNetworkInterface",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DeleteNetworkInterface",
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream"
+        "ec2:*",
+        "logs:*"
        ],
       "Resource": "*"
     }
@@ -145,7 +188,7 @@ resource "aws_lambda_function" "bidbay_lambda" {
   timeout          = 60
   vpc_config {
     security_group_ids = [aws_security_group.bidbay_sg_allowall.id]
-    subnet_ids         = [aws_subnet.bidbay_subnet_a.id, aws_subnet.bidbay_subnet_b.id]
+    subnet_ids         = [aws_subnet.example_subnet.id]
   }
 
   environment {
@@ -157,4 +200,48 @@ resource "aws_lambda_function" "bidbay_lambda" {
   tags = {
     Name = "${var.prefix}-bidbay-lambda"
   }
+}
+
+resource "aws_dynamodb_table" "id_sequences" {
+  name         = "id-sequences"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "sequence_name"
+  range_key    = "current_sequence"
+
+  attribute {
+    name = "sequence_name"
+    type = "S"
+  }
+
+  attribute {
+    name = "current_sequence"
+    type = "N"
+  }
+
+}
+
+
+resource "aws_dynamodb_table" "user_table" {
+  name         = "user-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "N"
+  }
+
+}
+
+
+resource "aws_dynamodb_table" "deal_table" {
+  name         = "deal-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "N"
+  }
+
 }
