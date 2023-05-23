@@ -20,20 +20,11 @@ export default class UserRepositoryDatabase implements UserRepository {
     async connect() {
         dotenv.config();
         console.log('connecting to mongo v2');
-
         try {
             if (!this.client) { // I added this extra check
                 console.log('setting client URL:', process.env.DB_CONN_STRING);
-                this.client = new MongoClient(process.env.DB_CONN_STRING as string, {
-                    //useUnifiedTopology: true,
-                    //useNewUrlParser: true,
-                    maxIdleTimeMS: 270000,
-                    minPoolSize: 2,
-                    maxPoolSize: 4
-                })
-                console.log('client connected:', this.client)
+                this.client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
                 const db: Db = await this.client.db(process.env.DB_NAME);
-                console.log('client connected:')
                 this.users = await db.collection(this.USER_COLLECTION_NAME);
                 this.counters = await db.collection(this.COUNTERS_COLLECTION_NAME);
                 console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.users.collectionName}`);
