@@ -1,7 +1,7 @@
 {
   "name": "api-bidbay",
   "version": "1.0.0",
-  "main": "./build/mainGC.js",
+  "main": "./build/main.js",
   "license": "MIT",
   "scripts": {
     "start": "node ./build/main.js",
