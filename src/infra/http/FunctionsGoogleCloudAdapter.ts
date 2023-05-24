@@ -25,6 +25,7 @@ export default class FunctionsGoogleCloudAdapter implements HttpServer {
     private handler(handler: Function) {
         return async function (req: any, res: any) {
             try {
+                console.log("Start request:", JSON.stringify(req))
                 const result = await handler(req.params, req.body);
                 if (result.status && result.body) {
                     res.status(result.status).send(result.body);
