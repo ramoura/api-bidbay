@@ -15,7 +15,7 @@ describe("AuthenticateUser", () => {
         await createUser.execute(user);
 
         const output = await authenticateUser.execute({login: "valid_login", password: "valid_password"});
-        expect(output.name).toBe("Name Test");
+        expect(output.user.name).toBe("Name Test");
         expect(output.token).not.toBeNull();
     });
     it("Should not authenticate a invalid password", async () => {

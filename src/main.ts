@@ -45,56 +45,60 @@ import UserRepositoryDatabase from "./infra/repository/database/UserRepositoryDa
 import DealRepositoryDatabase from "./infra/repository/database/DealRepositoryDatabase";
 import AuthorizationMiddleware from "./infra/http/api/AuthorizationMiddleware";
 import TokenGenerate from "./domain/service/TokenGenerate";
-import UserRepository from "./application/repository/UserRepository";
 import DealRepository from "./application/repository/DealRepository";
 import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
 
-const userRepository: UserRepository = await UserRepositoryDatabase.build();
-const dealRepository: DealRepository = await DealRepositoryDatabase.build()
-
 const httpServer = new FunctionsGoogleCloudAdapter()
 
-const createUser = new CreateUser(userRepository)
-const retrieveUser = new RetrieveUser(userRepository);
+let topLevelIIFE = (async () => {
+    const userRepository = await UserRepositoryDatabase.build();
+    const dealRepository: DealRepository = await DealRepositoryDatabase.build()
 
-const tokenGenerator = new TokenGenerate('secret')
 
-const authorizationMiddleware = new AuthorizationMiddleware(tokenGenerator)
+    const createUser = new CreateUser(userRepository)
+    const retrieveUser = new RetrieveUser(userRepository);
 
-new GetUserController(httpServer, retrieveUser, authorizationMiddleware)
-new PostUserController(httpServer, createUser)
-new PutUserController(httpServer, new UpdateUser(userRepository), authorizationMiddleware)
+    const tokenGenerator = new TokenGenerate('secret')
 
-new GetDealController(httpServer, new RetrieveDeal(dealRepository), authorizationMiddleware)
-new PostDealController(httpServer, new CreateDeal(dealRepository), authorizationMiddleware)
-new PutDealController(httpServer, new UpdateDeal(dealRepository), authorizationMiddleware)
+    const authorizationMiddleware = new AuthorizationMiddleware(tokenGenerator)
 
-new GetBidController(httpServer, new RetrieveBid(dealRepository))
-new GetBidsController(httpServer, new RetrieveBids(dealRepository))
-new PostBidController(httpServer, new CreateBid(dealRepository), authorizationMiddleware)
-new PutBidController(httpServer, new UpdateBid(dealRepository), authorizationMiddleware)
+    new GetUserController(httpServer, retrieveUser, authorizationMiddleware)
+    new PostUserController(httpServer, createUser)
+    new PutUserController(httpServer, new UpdateUser(userRepository), authorizationMiddleware)
 
-new GetMessageController(httpServer, new RetrieveMessage(dealRepository))
-new PostMessageController(httpServer, new CreateMessage(userRepository, dealRepository), authorizationMiddleware)
-new PutMessageController(httpServer, new UpdateMessage(dealRepository), authorizationMiddleware)
+    new GetDealController(httpServer, new RetrieveDeal(dealRepository), authorizationMiddleware)
+    new PostDealController(httpServer, new CreateDeal(dealRepository), authorizationMiddleware)
+    new PutDealController(httpServer, new UpdateDeal(dealRepository), authorizationMiddleware)
 
-new GetDeliveryController(httpServer, new RetrieveDelivery(dealRepository))
-new PostDeliveryController(httpServer, new CreateDelivery(dealRepository), authorizationMiddleware)
+    new GetBidController(httpServer, new RetrieveBid(dealRepository))
+    new GetBidsController(httpServer, new RetrieveBids(dealRepository))
+    new PostBidController(httpServer, new CreateBid(dealRepository), authorizationMiddleware)
+    new PutBidController(httpServer, new UpdateBid(dealRepository), authorizationMiddleware)
 
-new GetInviteController(httpServer, new RetrieveInvite(userRepository), authorizationMiddleware)
-new GetInvitesController(httpServer, new RetrieveInvites(userRepository), authorizationMiddleware)
-new PostInviteController(httpServer, new CreateInvite(userRepository), authorizationMiddleware)
-new PutInviteController(httpServer, new UpdateInvite(userRepository), authorizationMiddleware)
+    new GetMessageController(httpServer, new RetrieveMessage(dealRepository))
+    new PostMessageController(httpServer, new CreateMessage(userRepository, dealRepository), authorizationMiddleware)
+    new PutMessageController(httpServer, new UpdateMessage(dealRepository), authorizationMiddleware)
 
-new AuthenticateController(httpServer, new AuthenticateUser(userRepository, tokenGenerator))
+    new GetDeliveryController(httpServer, new RetrieveDelivery(dealRepository))
+    new PostDeliveryController(httpServer, new CreateDelivery(dealRepository), authorizationMiddleware)
 
-const ssoProvider: SSOProviderGateway = {
-    authenticate: (token: string) => {
-        return undefined as any;
-    }
-} as SSOProviderGateway
+    new GetInviteController(httpServer, new RetrieveInvite(userRepository), authorizationMiddleware)
+    new GetInvitesController(httpServer, new RetrieveInvites(userRepository), authorizationMiddleware)
+    new PostInviteController(httpServer, new CreateInvite(userRepository), authorizationMiddleware)
+    new PutInviteController(httpServer, new UpdateInvite(userRepository), authorizationMiddleware)
 
-new AuthenticateSSOController(httpServer, new AuthenticateSSO(ssoProvider, userRepository))
-httpServer.listen(3001)
+    new AuthenticateController(httpServer, new AuthenticateUser(userRepository, tokenGenerator))
+
+    const ssoProvider: SSOProviderGateway = {
+        authenticate: (token: string) => {
+            return undefined as any;
+        }
+    } as SSOProviderGateway
+
+    new AuthenticateSSOController(httpServer, new AuthenticateSSO(ssoProvider, userRepository))
+    httpServer.listen(3001)
+
+
+})()
 
 export const api = httpServer.app;
