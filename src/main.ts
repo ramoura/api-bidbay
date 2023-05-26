@@ -47,12 +47,20 @@ import AuthorizationMiddleware from "./infra/http/api/AuthorizationMiddleware";
 import TokenGenerate from "./domain/service/TokenGenerate";
 import DealRepository from "./application/repository/DealRepository";
 import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
+import {MongoClient} from "mongodb";
 
 const httpServer = new FunctionsGoogleCloudAdapter()
 
 let topLevelIIFE = (async () => {
-    const userRepository = await UserRepositoryDatabase.build();
-    const dealRepository: DealRepository = await DealRepositoryDatabase.build()
+
+
+    console.log('setting client URL:', process.env.DB_CONN_STRING);
+    console.log('connecting to mongo');
+    const client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
+    console.log('connected to mongo');
+
+    const userRepository = await UserRepositoryDatabase.build(client);
+    const dealRepository: DealRepository = await DealRepositoryDatabase.build(client)
 
 
     const createUser = new CreateUser(userRepository)

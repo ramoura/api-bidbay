@@ -7,32 +7,29 @@ export default class DealRepositoryDatabase implements DealRepository {
     private DEALS_COLLECTION_NAME: string = 'deals'
     private COUNTERS_COLLECTION_NAME: string = 'counters';
 
-    private client: MongoClient = undefined as any;
     private deals: Collection = undefined as any;
     private counters: Collection = undefined as any;
 
-    constructor() {
+    constructor(readonly client: MongoClient) {
     }
 
-    static async build(): Promise<DealRepository> {
-        const dealRepositoryDatabase = new DealRepositoryDatabase();
+    static async build(client: MongoClient): Promise<DealRepository> {
+        const dealRepositoryDatabase = new DealRepositoryDatabase(client);
         await dealRepositoryDatabase.connect();
         return dealRepositoryDatabase;
     }
 
     async connect() {
         dotenv.config();
-        console.log('connecting to mongo');
-
+        if (!this.client) { // I added this extra check
+            console.log('client is null')
+            throw new Error('client is null');
+        }
         try {
-            if (!this.client) { // I added this extra check
-                console.log('setting client URL:', process.env.DB_CONN_STRING);
-                this.client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
-                const db: Db = this.client.db(process.env.DB_NAME);
-                this.deals = db.collection(this.DEALS_COLLECTION_NAME);
-                this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
-                console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.deals.collectionName}`);
-            }
+            const db: Db = this.client.db(process.env.DB_NAME);
+            this.deals = db.collection(this.DEALS_COLLECTION_NAME);
+            this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
+            console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.deals.collectionName}`);
         } catch (error) {
             console.log('error during connecting to mongo: ');
             console.error(error);

@@ -1,6 +1,6 @@
 import UserRepository from "../../../application/repository/UserRepository";
 import User from "../../../domain/entity/User";
-import {Collection, Db, MongoClient} from "mongodb";
+import {Collection, MongoClient} from "mongodb";
 import dotenv from "dotenv";
 
 
@@ -8,15 +8,14 @@ export default class UserRepositoryDatabase implements UserRepository {
     private USER_COLLECTION_NAME: string = 'users'
     private COUNTERS_COLLECTION_NAME: string = 'counters';
 
-    private client: MongoClient = undefined as any;
     private users: Collection = undefined as any;
     private counters: Collection = undefined as any;
 
-    constructor() {
+    constructor(readonly client: MongoClient) {
     }
 
-    static async build(): Promise<UserRepository> {
-        const userRepositoryDatabase = new UserRepositoryDatabase();
+    static async build(client: MongoClient): Promise<UserRepository> {
+        const userRepositoryDatabase = new UserRepositoryDatabase(client);
         await userRepositoryDatabase.connect();
         return userRepositoryDatabase;
     }
@@ -24,16 +23,15 @@ export default class UserRepositoryDatabase implements UserRepository {
 
     async connect() {
         dotenv.config();
-        console.log('connecting to mongo v2');
+        if (!this.client) { // I added this extra check
+            console.log('client is null')
+            throw new Error('client is null');
+        }
         try {
-            if (!this.client) { // I added this extra check
-                console.log('setting client URL:', process.env.DB_CONN_STRING);
-                this.client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
-                const db: Db = await this.client.db(process.env.DB_NAME);
-                this.users = await db.collection(this.USER_COLLECTION_NAME);
-                this.counters = await db.collection(this.COUNTERS_COLLECTION_NAME);
-                console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.users.collectionName}`);
-            }
+            const db = this.client.db(process.env.DB_NAME);
+            this.users = db.collection(this.USER_COLLECTION_NAME);
+            this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
+            console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.users.collectionName}`);
         } catch (error) {
             console.log('error during connecting to mongo: ');
             console.error(error);

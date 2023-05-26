@@ -1,14 +1,19 @@
 import CreateUser from "../../application/usecase/user/CreateUser";
 import RetrieveUser from "../../application/usecase/user/RetrieveUser";
 import UserRepositoryDatabase from "../repository/database/UserRepositoryDatabase";
+import {MongoClient} from "mongodb";
 
 exports.requestUsers = async (req: any, res: any) => {
     try {
         // Lógica da sua função aqui
         console.log("Req: " + JSON.stringify(req, null, 2))
+        console.log('setting client URL:', process.env.DB_CONN_STRING);
+        console.log('connecting to mongo');
+        const client = await MongoClient.connect(process.env.DB_CONN_STRING as string)
+        console.log('connected to mongo');
 
 
-        const userRepository = new UserRepositoryDatabase();
+        const userRepository = new UserRepositoryDatabase(client);
         await userRepository.connect();
         const createUser = new CreateUser(userRepository)
         const retrieveUser = new RetrieveUser(userRepository);
