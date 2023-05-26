@@ -1,7 +1,6 @@
 import UserRepository from "../../../application/repository/UserRepository";
 import User from "../../../domain/entity/User";
 import {Collection, MongoClient} from "mongodb";
-import dotenv from "dotenv";
 
 
 export default class UserRepositoryDatabase implements UserRepository {
@@ -22,7 +21,6 @@ export default class UserRepositoryDatabase implements UserRepository {
 
 
     async connect() {
-        dotenv.config();
         if (!this.client) { // I added this extra check
             console.log('client is null')
             throw new Error('client is null');

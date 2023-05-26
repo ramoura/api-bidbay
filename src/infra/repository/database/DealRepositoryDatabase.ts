@@ -1,6 +1,5 @@
 import DealRepository from "../../../application/repository/DealRepository";
 import {Collection, Db, MongoClient} from "mongodb";
-import dotenv from "dotenv";
 import Deal from "../../../domain/entity/Deal";
 
 export default class DealRepositoryDatabase implements DealRepository {
@@ -20,7 +19,6 @@ export default class DealRepositoryDatabase implements DealRepository {
     }
 
     async connect() {
-        dotenv.config();
         if (!this.client) { // I added this extra check
             console.log('client is null')
             throw new Error('client is null');

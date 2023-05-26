@@ -48,11 +48,13 @@ import TokenGenerate from "./domain/service/TokenGenerate";
 import DealRepository from "./application/repository/DealRepository";
 import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
 import {MongoClient} from "mongodb";
+import dotenv from "dotenv";
 
 const httpServer = new FunctionsGoogleCloudAdapter()
 
 let topLevelIIFE = (async () => {
 
+    dotenv.config();
 
     console.log('setting client URL:', process.env.DB_CONN_STRING);
     console.log('connecting to mongo');
