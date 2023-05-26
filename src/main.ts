@@ -49,8 +49,8 @@ import UserRepository from "./application/repository/UserRepository";
 import DealRepository from "./application/repository/DealRepository";
 import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
 
-const userRepository: UserRepository = new UserRepositoryDatabase();
-const dealRepository: DealRepository = new DealRepositoryDatabase()
+const userRepository: UserRepository = await UserRepositoryDatabase.build();
+const dealRepository: DealRepository = await DealRepositoryDatabase.build()
 
 const httpServer = new FunctionsGoogleCloudAdapter()
 

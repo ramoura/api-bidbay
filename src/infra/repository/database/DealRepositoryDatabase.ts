@@ -12,7 +12,12 @@ export default class DealRepositoryDatabase implements DealRepository {
     private counters: Collection = undefined as any;
 
     constructor() {
-        this.connect();
+    }
+
+    static async build(): Promise<DealRepository> {
+        const dealRepositoryDatabase = new DealRepositoryDatabase();
+        await dealRepositoryDatabase.connect();
+        return dealRepositoryDatabase;
     }
 
     async connect() {

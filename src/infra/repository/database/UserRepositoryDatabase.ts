@@ -13,7 +13,12 @@ export default class UserRepositoryDatabase implements UserRepository {
     private counters: Collection = undefined as any;
 
     constructor() {
-        this.connect();
+    }
+
+    static async build(): Promise<UserRepository> {
+        const userRepositoryDatabase = new UserRepositoryDatabase();
+        await userRepositoryDatabase.connect();
+        return userRepositoryDatabase;
     }
 
 
