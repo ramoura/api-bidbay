@@ -9,8 +9,10 @@ export default class UserRepositoryDatabase implements UserRepository {
 
     private users: Collection = undefined as any;
     private counters: Collection = undefined as any;
+    private _client: MongoClient;
 
-    constructor(readonly client: MongoClient) {
+    constructor(client: MongoClient) {
+        this._client = client;
     }
 
     static async build(client: MongoClient): Promise<UserRepository> {
@@ -19,17 +21,31 @@ export default class UserRepositoryDatabase implements UserRepository {
         return userRepositoryDatabase;
     }
 
+    async getClient(): Promise<MongoClient> {
+        if (this._client) {
+            console.log("MONGODB CLIENT ALREADY CONNECTED!");
+        } else {
+            try {
+                this._client = await MongoClient.connect(process.env.DB_CONN_STRING as string);
+                await this.connect();
+                console.log("MONGODB CLIENT RECONNECTED!");
+            } catch (e) {
+                throw e;
+            }
+        }
+        return this._client;
+    }
 
     async connect() {
-        if (!this.client) { // I added this extra check
+        if (!this._client) { // I added this extra check
             console.log('client is null')
             throw new Error('client is null');
         }
         try {
-            const db = this.client.db(process.env.DB_NAME);
+            const db = this._client.db(process.env.DB_NAME);
             this.users = db.collection(this.USER_COLLECTION_NAME);
             this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
-            console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.users.collectionName}`);
+            console.log(`Successfully connected to database: ${db.databaseName} and collection: ${(await this.getUsers()).collectionName}`);
         } catch (error) {
             console.log('error during connecting to mongo: ');
             console.error(error);
@@ -37,7 +53,7 @@ export default class UserRepositoryDatabase implements UserRepository {
     }
 
     async findByEmail(email: string): Promise<User | undefined> {
-        var userDB = await this.users.findOne(
+        var userDB = await (await this.getUsers()).findOne(
             {email: email}
         );
         if (!userDB) return undefined;
@@ -46,7 +62,7 @@ export default class UserRepositoryDatabase implements UserRepository {
 
     async findById(userId: number): Promise<User | undefined> {
         console.log('findById')
-        var userDB = await this.users.findOne(
+        var userDB = await (await this.getUsers()).findOne(
             {id: userId}
         );
         console.log('findById result:', userDB)
@@ -55,7 +71,7 @@ export default class UserRepositoryDatabase implements UserRepository {
     }
 
     async findByLogin(login: string): Promise<User | undefined> {
-        var userDB = await this.users.findOne(
+        var userDB = await (await this.getUsers()).findOne(
             {login: login}
         );
         if (!userDB) return undefined;
@@ -65,16 +81,21 @@ export default class UserRepositoryDatabase implements UserRepository {
     async saveUser(user: User): Promise<User> {
         const id = await this.getNextSequence('userid')
         user.id = id;
-        const userEntity = await this.users.insertOne(user);
+        const userEntity = await (await this.getUsers()).insertOne(user);
         return user;
     }
 
     async updateUser(user: User): Promise<User> {
-        const userEntity = await this.users.findOneAndUpdate(
+        const userEntity = await (await this.getUsers()).findOneAndUpdate(
             {id: user.id},
             {$set: user}
         );
         return user;
+    }
+
+    private async getUsers(): Promise<Collection> {
+        await this.getClient();
+        return this.users;
     }
 
     private extracted(userDB: any) {
