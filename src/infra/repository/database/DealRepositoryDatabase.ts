@@ -9,7 +9,10 @@ export default class DealRepositoryDatabase implements DealRepository {
     private deals: Collection = undefined as any;
     private counters: Collection = undefined as any;
 
-    constructor(readonly client: MongoClient) {
+    private _client: MongoClient;
+
+    constructor(client: MongoClient = undefined as any) {
+        this._client = client;
     }
 
     static async build(client: MongoClient): Promise<DealRepository> {
@@ -18,13 +21,28 @@ export default class DealRepositoryDatabase implements DealRepository {
         return dealRepositoryDatabase;
     }
 
+    async getClient(): Promise<MongoClient> {
+        if (this._client) {
+            console.log("MONGODB CLIENT ALREADY CONNECTED!");
+        } else {
+            try {
+                this._client = await MongoClient.connect(process.env.DB_CONN_STRING as string);
+                await this.connect();
+                console.log("MONGODB CLIENT RECONNECTED!");
+            } catch (e) {
+                throw e;
+            }
+        }
+        return this._client;
+    }
+
     async connect() {
-        if (!this.client) { // I added this extra check
+        if (!this._client) { // I added this extra check
             console.log('client is null')
             throw new Error('client is null');
         }
         try {
-            const db: Db = this.client.db(process.env.DB_NAME);
+            const db: Db = this._client.db(process.env.DB_NAME);
             this.deals = db.collection(this.DEALS_COLLECTION_NAME);
             this.counters = db.collection(this.COUNTERS_COLLECTION_NAME);
             console.log(`Successfully connected to database: ${db.databaseName} and collection: ${this.deals.collectionName}`);
@@ -37,12 +55,12 @@ export default class DealRepositoryDatabase implements DealRepository {
     async create(deal: Deal): Promise<Deal> {
         const id = await this.getNextSequence('dealid')
         deal.id = id;
-        const userEntity = await this.deals.insertOne(deal);
+        const userEntity = await (await this.getDeals()).insertOne(deal);
         return deal;
     }
 
     async findById(dealId: number): Promise<Deal | undefined> {
-        var dealDB = await this.deals.findOne(
+        var dealDB = await (await this.getDeals()).findOne(
             {id: dealId}
         );
         if (!dealDB) return undefined;
@@ -50,12 +68,17 @@ export default class DealRepositoryDatabase implements DealRepository {
     }
 
     async update(deal: Deal): Promise<Deal> {
-        const userEntity = await this.deals.findOneAndUpdate(
+        const userEntity = await (await this.getDeals()).findOneAndUpdate(
             {id: deal.id},
             {$set: deal}
         );
         return deal;
 
+    }
+
+    private async getDeals(): Promise<Collection> {
+        await this.getClient();
+        return this.deals;
     }
 
     private async getNextSequence(name: any): Promise<number> {

@@ -11,7 +11,7 @@ export default class UserRepositoryDatabase implements UserRepository {
     private counters: Collection = undefined as any;
     private _client: MongoClient;
 
-    constructor(client: MongoClient) {
+    constructor(client: MongoClient = undefined as any) {
         this._client = client;
     }
 
