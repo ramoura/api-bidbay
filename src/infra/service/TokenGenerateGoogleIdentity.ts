@@ -24,6 +24,8 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
 
         const token = await jwtClient.authorize();
 
+        console.log(token)
+
         if (!token.access_token) {
             throw new Error("TokenGenerateLocal generate")
         }
