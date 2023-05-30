@@ -12,7 +12,11 @@ export default class FunctionsGoogleCloudAdapter implements HttpServer {
     }
 
     register(method: string, path: string, handler: Function, checkAuth?: Function): void {
-        this.app[method](path, this.handler(handler))
+        if (checkAuth) {
+            this.app[method](path, checkAuth, this.handler(handler))
+        } else {
+            this.app[method](path, this.handler(handler))
+        }
     }
 
     registerUpload(path: string, handler: any, func: Function): void {
