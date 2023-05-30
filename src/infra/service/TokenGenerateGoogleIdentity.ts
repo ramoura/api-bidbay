@@ -8,13 +8,15 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
     }
 
     async generate(user: User, expiresIn: number, issueDate: Date): Promise<string> {
+        console.log(process.env.PRIVATE_KEY)
+        const key: string = process.env.PRIVATE_KEY ?? ""
 
         console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.CLIENT_EMAIL);
-        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.PRIVATE_KEY)
+        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + decodeURI(key));
 
         const credentials = {
             client_email: process.env.CLIENT_EMAIL,
-            private_key: process.env.PRIVATE_KEY,
+            private_key: key,
         };
 
         const jwtClient = new JWT({
