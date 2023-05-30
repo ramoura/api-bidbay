@@ -44,10 +44,11 @@ import SSOProviderGateway from "./application/gateway/SSOProviderGateway";
 import UserRepositoryDatabase from "./infra/repository/database/UserRepositoryDatabase";
 import DealRepositoryDatabase from "./infra/repository/database/DealRepositoryDatabase";
 import AuthorizationMiddleware from "./infra/http/api/AuthorizationMiddleware";
-import TokenGenerate from "./domain/service/TokenGenerate";
 import DealRepository from "./application/repository/DealRepository";
 import FunctionsGoogleCloudAdapter from "./infra/http/FunctionsGoogleCloudAdapter";
 import dotenv from "dotenv";
+import TokenGenerate from "./domain/service/TokenGenerate";
+import TokenGenerateGoogleIdentity from "./infra/service/TokenGenerateGoogleIdentity";
 
 const httpServer = new FunctionsGoogleCloudAdapter()
 
@@ -62,7 +63,7 @@ let topLevelIIFE = (async () => {
     const createUser = new CreateUser(userRepository)
     const retrieveUser = new RetrieveUser(userRepository);
 
-    const tokenGenerator = new TokenGenerate('secret')
+    const tokenGenerator: TokenGenerate = new TokenGenerateGoogleIdentity('secret')
 
     const authorizationMiddleware = new AuthorizationMiddleware(tokenGenerator)
 
