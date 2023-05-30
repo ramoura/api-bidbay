@@ -10,6 +10,7 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
     async generate(user: User, expiresIn: number, issueDate: Date): Promise<string> {
 
         console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.CLIENT_EMAIL);
+        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.PRIVATE_KEY)
 
         const credentials = {
             client_email: process.env.CLIENT_EMAIL,
