@@ -27,14 +27,16 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
             scopes: ['https://www.googleapis.com/auth/service-account'],
         });
 
-        const token = await jwtClient.authorize();
+        const token = jwtClient.createScoped("887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com")
+        const tokenxx = await jwtClient.authorize();
 
         console.log(token)
+        console.log(tokenxx)
 
-        if (!token.access_token) {
+        if (token.gtoken?.rawToken) {
             throw new Error("TokenGenerateLocal generate")
         }
-        return token.access_token;
+        return JSON.stringify(token.gtoken?.rawToken);
     }
 
     async generate2(user: User, expiresIn: number, issueDate: Date): Promise<string> {
