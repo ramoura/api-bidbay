@@ -55,7 +55,8 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
             privateKey,
             {
                 expiresIn: expiresIn,
-                algorithm: 'RS256'
+                algorithm: 'RS256',
+                keyid: "2d9a5ef5b12623c91671a7093cb323333cd07d09"
             }
         );
     }
