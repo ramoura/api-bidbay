@@ -67,7 +67,7 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
 
     async verify(token: string): Promise<any> {
         //throw new Error("Method not implemented.")
-        console.log("TokenGenerateLocal verify")
+        console.log("TokenGenerateLocal verify: ", token)
     }
 
 }
