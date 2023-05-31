@@ -36,7 +36,7 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
         if (token.gtoken?.rawToken) {
             throw new Error("TokenGenerateLocal generate")
         }
-        return JSON.stringify(token.gtoken?.rawToken);
+        return this.generate2(user, expiresIn, issueDate);
     }
 
     async generate2(user: User, expiresIn: number, issueDate: Date): Promise<string> {
@@ -49,7 +49,7 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
         console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + privateKey);
 
         return sign({
-                aud: "https://www.googleapis.com/auth/service-account",
+                aud: "887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com",
                 iss: "https://accounts.google.com",
                 email: process.env.CLIENT_EMAIL,
                 azp: process.env.CLIENT_EMAIL,
