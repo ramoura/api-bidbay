@@ -12,10 +12,6 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
         const key: string = process.env.PRIVATE_KEY ?? ""
         const privateKey = key.replace(/\\n/g, '\n');
 
-        console.log(process.env.PRIVATE_KEY)
-        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.CLIENT_EMAIL);
-        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + privateKey);
-
         const credentials = {
             client_email: process.env.CLIENT_EMAIL,
             private_key: privateKey,
@@ -30,23 +26,20 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
         const token = jwtClient.createScoped("887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com")
         const tokenxx = await jwtClient.authorize();
 
-        console.log(token)
-        console.log(tokenxx)
+        const getAccessTokenResponse = await token.getAccessToken();
+        console.log('getAccessToken: ' + getAccessTokenResponse)
+        console.log('getAccessToken.token: ' + getAccessTokenResponse.token)
 
-        if (token.gtoken?.rawToken) {
-            throw new Error("TokenGenerateLocal generate")
-        }
+
+        console.log('token: ' + token)
+        console.log('tokenxx: ' + tokenxx)
+
         return this.generate2(user, expiresIn, issueDate);
     }
 
     async generate2(user: User, expiresIn: number, issueDate: Date): Promise<string> {
         const key: string = process.env.PRIVATE_KEY ?? ""
         const privateKey = key.replace(/\\n/g, '\n');
-
-
-        console.log(process.env.PRIVATE_KEY)
-        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + process.env.CLIENT_EMAIL);
-        console.log("TokenGenerateLocal generate token for user: " + user.name + " use: " + privateKey);
 
         return sign({
                 aud: "887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com",
@@ -62,7 +55,7 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
             privateKey,
             {
                 expiresIn: expiresIn,
-                algorithm: 'HS256'
+                algorithm: 'RS256'
             }
         );
     }
