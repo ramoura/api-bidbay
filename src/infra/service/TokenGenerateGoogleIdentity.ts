@@ -1,7 +1,6 @@
 import User from "../../domain/entity/User";
 import TokenGenerate from "../../domain/service/TokenGenerate";
 import {JWT} from 'google-auth-library';
-import {sign} from "jsonwebtoken";
 
 export default class TokenGenerateGoogleIdentity implements TokenGenerate {
 
@@ -20,45 +19,11 @@ export default class TokenGenerateGoogleIdentity implements TokenGenerate {
         const jwtClient = new JWT({
             email: credentials.client_email,
             key: credentials.private_key,
-            scopes: ['https://www.googleapis.com/auth/service-account'],
+            scopes: ['887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com'],
         });
 
-        const token = jwtClient.createScoped("887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com")
-        const tokenxx = await jwtClient.authorize();
-
-        const getAccessTokenResponse = await token.getAccessToken();
-        console.log('getAccessToken: ' + getAccessTokenResponse)
-        console.log('getAccessToken.token: ' + getAccessTokenResponse.token)
-
-
-        console.log('token: ' + token)
-        console.log('tokenxx: ' + tokenxx)
-
-        return this.generate2(user, expiresIn, issueDate);
-    }
-
-    async generate2(user: User, expiresIn: number, issueDate: Date): Promise<string> {
-        const key: string = process.env.PRIVATE_KEY ?? ""
-        const privateKey = key.replace(/\\n/g, '\n');
-
-        return sign({
-                aud: "887369271138-idjnnb8vs3sm35qltcjedg2udcco8gre.apps.googleusercontent.com",
-                iss: "https://accounts.google.com",
-                email: process.env.CLIENT_EMAIL,
-                azp: process.env.CLIENT_EMAIL,
-                email_verified: true,
-                scopes: ['https://www.googleapis.com/auth/service-account'],
-                name: user.name,
-                //email: user.email,
-                iat: Math.floor(issueDate.getTime() / 1000)
-            },
-            privateKey,
-            {
-                expiresIn: expiresIn,
-                algorithm: 'RS256',
-                keyid: "2d9a5ef5b12623c91671a7093cb323333cd07d09"
-            }
-        );
+        const authorize = await jwtClient.authorize();
+        return authorize.id_token ?? "";
     }
 
     async verify(token: string): Promise<any> {
